@@ -69,11 +69,12 @@ public class MainMenu {
     private static void createAnAccount() {
         System.out.println("Enter your email");
         String email = "";
-        try{
-            email = emailValidator(scanner);
-        }catch (Exception ex){
-            System.out.println(ex.getLocalizedMessage());
-            email = emailValidator(scanner);
+        while(email == "") {
+            try {
+                email = emailValidator(scanner);
+            } catch (Exception ex) {
+                System.out.println(ex.getLocalizedMessage());
+            }
         }
         System.out.println("Enter your firstName");
         String firstName = scanner.nextLine();
@@ -84,11 +85,12 @@ public class MainMenu {
 
     private static void seeMyReservations() {
         String email = "";
-        try{
-            email = emailValidator(scanner);
-        }catch (Exception ex){
-            System.out.println(ex.getLocalizedMessage());
-            email = emailValidator(scanner);
+        while(email == "") {
+            try {
+                email = emailValidator(scanner);
+            } catch (Exception ex) {
+                System.out.println(ex.getLocalizedMessage());
+            }
         }
 
         try {
@@ -116,20 +118,22 @@ public class MainMenu {
     {
         System.out.println("Enter CheckIn Date in dd/MM/yyyy format");
         Date date1 = null;
-        try {
-            date1 = dateValidator(scanner);
-        }catch (Exception ex){
-            System.out.println(ex.getLocalizedMessage());
-            date1 = dateValidator(scanner);
+        while(date1 == null){
+            try {
+                date1 = dateValidator(scanner);
+            }catch (Exception ex){
+                System.out.println(ex.getLocalizedMessage());
+            }
         }
 
         System.out.println("Enter CheckOut Date in dd/MM/yyyy format");
         Date date2 = null;
-        try {
-            date2 = dateValidator(scanner);
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            date2 = dateValidator(scanner);
+        while (date2 == null) {
+            try {
+                date2 = dateValidator(scanner);
+            } catch (Exception ex) {
+                System.out.println(ex.getLocalizedMessage());
+            }
         }
 
         if(date2.compareTo(date1) < 0)
@@ -142,6 +146,27 @@ public class MainMenu {
         if(rooms.isEmpty())
         {
             System.out.println("Sorry! No rooms are available from " + date1 + " to " + date2);
+            System.out.println("We recommend these rooms for alternate dates: ");
+            Collection<Collection<Reservation>> reservationsList = hotelResource.recommendRooms(date1,date2);
+            if(reservationsList.isEmpty())
+            {
+                System.out.println("No rooms are available!");
+                return;
+            }
+            for(Collection<Reservation> reservations : reservationsList)
+            {
+                for(Reservation reservation : reservations)
+                {
+                    //Date roomCheckIn = reservation.getCheckInDate();
+                    Date roomCheckOut = reservation.getCheckOutDate();
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(roomCheckOut);
+                    cal.add(Calendar.DATE, 1);
+
+                    IRoom room = reservation.getRoom();
+                    System.out.println("Room number: " + room.getRoomNumber() + " is available from " + cal.getTime());
+                }
+            }
             return;
         }
         else{
@@ -153,33 +178,51 @@ public class MainMenu {
         }
         System.out.println("Would you like to book a room? y/n");
         String bookingFlag = "";
-        try {
-            bookingFlag = YnNFlag(scanner);
-        }catch (Exception ex){
-            System.out.println(ex.getLocalizedMessage());
-            bookingFlag = YnNFlag(scanner);
+        while (bookingFlag == "") {
+            try {
+                bookingFlag = YnNFlag(scanner);
+            } catch (Exception ex) {
+                System.out.println(ex.getLocalizedMessage());
+            }
         }
         try {
             if (bookingFlag.equalsIgnoreCase("y")) {
                 System.out.println("Do you have an account with us? y/n");
                 String response = "";
-                try{
-                    response = YnNFlag(scanner);
-                }catch (Exception ex) {
-                    System.out.println(ex.getLocalizedMessage());
-                    response = YnNFlag(scanner);
+                while (response == "") {
+                    try {
+                        response = YnNFlag(scanner);
+                    } catch (Exception ex) {
+                        System.out.println(ex.getLocalizedMessage());
+                    }
                 }
 
                 if (response.equalsIgnoreCase("y")) {
                     System.out.println("Please enter your email");
-                    String email = scanner.nextLine();
+                    String email = "";
+                    while(email == "") {
+                        try {
+                            email = emailValidator(scanner);
+                        } catch (Exception ex) {
+                            System.out.println(ex.getLocalizedMessage());
+                        }
+                    }
                     Customer customer = hotelResource.getCustomer(email);
                     if (customer == null) {
                         System.out.println("Please select option 3 to create a new account before booking a room");
                         return;
                     } else {
                         System.out.println("Which room would you like to reserve?");
-                        String roomNumber = scanner.nextLine();
+                        String roomNumber = "";
+                        int rNum = -1;
+                        while (rNum == -1) {
+                            try {
+                                roomNumber = scanner.nextLine();
+                                rNum = Integer.parseInt(roomNumber);
+                            } catch (Exception ex) {
+                                System.out.println("Please enter a valid room number, it should be a numerical value eg 101");
+                            }
+                        }
                         boolean flag = false;
                         for (IRoom room : rooms) {
                             if (room.getRoomNumber().equalsIgnoreCase(roomNumber)) {
@@ -193,7 +236,7 @@ public class MainMenu {
                             }
                         }
                         if (flag == false) {
-                            System.out.println("Sorry! The room you are looking for is not available!,\n Please Try Again for a new room!");
+                            System.out.println("Sorry! The room you are looking for is not available!\nPlease Try Again for a new room!");
                         }
                     }
 

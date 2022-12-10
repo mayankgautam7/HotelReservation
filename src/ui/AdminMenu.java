@@ -93,30 +93,42 @@ public class AdminMenu {
 
     private void addARoom() {
         System.out.println("Enter a Room Number");
-        String roomNmber = scanner.nextLine();
-        System.out.println("Enter price per night");
-        Double price = 0.0;
+        String roomNumber = scanner.nextLine();
         try{
-            price = validatePrice(scanner);
-        }catch (Exception ex){
-            System.out.println("Please enter a valid numrical price eg 156");
-            price = validatePrice(scanner);
+            int rNum = Integer.parseInt(roomNumber);
+        }catch(Exception ex){
+            System.out.println("Room number should be a numerical value eg 101");
+            addARoom();
+        }
+        System.out.println("Enter price per night");
+        Double price = null;
+        while(price == null) {
+            try {
+                price = validatePrice(scanner);
+            } catch (Exception ex) {
+                System.out.println("Please enter a valid numerical price eg 156");
+            }
         }
 
         System.out.println("Enter a Room Type: 1 for Single Bed or 2 for Double Bed");
-        String roomType = scanner.nextLine();
-        try
-        {
-            validateRoom(roomNmber,price,roomType,true);
-        }catch(Exception ex)
-        {
-            System.out.println("Please enter 1 for Single bed or 2 for Double bed as input");
-            roomType = scanner.nextLine();
-            validateRoom(roomNmber,price,roomType,true);
+        String roomType = "";
+        while(roomType == "") {
+            try {
+                roomType = validateRoom(roomNumber, price, scanner);
+            } catch (Exception ex) {
+                System.out.println(ex.getLocalizedMessage());
+            }
         }
 
         System.out.println("Would you like to enter a new room? y/n");
-        String flag = scanner.nextLine();
+        String flag = "";
+        while(flag =="") {
+            try {
+                flag = YnNFlag(scanner);
+            } catch (Exception ex) {
+                System.out.println(ex.getLocalizedMessage());
+            }
+        }
         if(flag.equalsIgnoreCase("y"))
         {
             addARoom();
@@ -132,8 +144,9 @@ public class AdminMenu {
         return price;
     }
 
-    private void validateRoom(String roomNumber, Double price, String roomType, boolean isFree)
+    private String validateRoom(String roomNumber, Double price, Scanner scanner)
     {
+        String roomType = scanner.nextLine();
         RoomType rt = null;
         if(roomType.equalsIgnoreCase("1"))
         {
@@ -166,6 +179,19 @@ public class AdminMenu {
         {
             System.out.println(ex.getLocalizedMessage());
             addARoom();
+        }
+        return roomType;
+    }
+    public static String YnNFlag(Scanner scanner)
+    {
+        String flag = scanner.nextLine();
+        try{
+            if(flag.equalsIgnoreCase("y") || flag.equalsIgnoreCase("n"))
+                return flag;
+            else
+                throw new IllegalArgumentException("Invalid input, Please enter y for Yes or n for No");
+        }catch (Exception ex){
+            throw ex;
         }
     }
 }
