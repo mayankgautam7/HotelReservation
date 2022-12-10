@@ -31,7 +31,6 @@ public class ReservationService {
     {
         Reservation reservation = new Reservation(customer, room, checkInDate, checkOutDate);
 
-        //Collection<Reservation> reservations = getCustomerReservation(customer);
         Collection<Reservation> reservations = reservationMap.get(customer.getEmail());
         if(reservations == null)
         {
@@ -52,7 +51,6 @@ public class ReservationService {
     // TODO - JUST A PLACEHOLDER
     public Collection<IRoom> findRooms(Date checkInDate, Date checkOutDate)
     {
-        Collection<IRoom> roomsList = new ArrayList<>();
         Collection<IRoom> reservedRoomsList = new ArrayList<>();
         Collection<IRoom> openRooms = new ArrayList<>();
         for(String customerId : reservationMap.keySet()) {
@@ -102,5 +100,10 @@ public class ReservationService {
             System.out.println("No rooms in system.");
         }
         return roomList;
+    }
+
+    public Collection<Collection<Reservation>> recommendRooms(Date checkIn, Date checkOut) {
+        Collection<Collection<Reservation>> reservations1 = reservationMap.values();
+        return reservations1;
     }
 }
